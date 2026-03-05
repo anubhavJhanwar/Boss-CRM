@@ -68,10 +68,15 @@ backend/
 
 ## Cron Jobs
 
-Daily at midnight (00:00):
+### Expiry Check (Midnight - 00:00)
 - Check expired subscriptions
 - Update client statuses
-- Send email notifications
+- Send expiry notifications
+
+### Reminder System (9:00 AM)
+- Send reminder emails 3 days before expiry
+- Prevents duplicate reminders
+- See [REMINDER_SYSTEM.md](./REMINDER_SYSTEM.md) for details
 
 ## Testing
 

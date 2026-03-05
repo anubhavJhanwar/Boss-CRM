@@ -1,24 +1,34 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator
+  ActivityIndicator,
+  Platform
 } from 'react-native';
 import { useClientStore } from '../../store/clientStore';
 
 const ClientDetailsScreen: React.FC<{ navigation: any; route: any }> = ({ navigation, route }) => {
   const { clientId } = route.params;
   const { selectedClient, fetchClientById, deleteClient, isLoading } = useClientStore();
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadClient();
   }, [clientId]);
 
   const loadClient = async () => {
-    await fetchClientById(clientId);
+    try {
+      setError(null);
+      console.log('Loading client:', clientId);
+      await fetchClientById(clientId);
+      console.log('Client loaded successfully');
+    } catch (err: any) {
+      console.error('Error loading client:', err);
+      setError(err.message || 'Failed to load client');
+    }
   };
 
   const handleEdit = () => {
@@ -27,7 +37,9 @@ const ClientDetailsScreen: React.FC<{ navigation: any; route: any }> = ({ naviga
 
   const handleDelete = () => {
     // Web-compatible confirmation
-    const confirmed = window.confirm('Are you sure you want to delete this client?');
+    const confirmed = Platform.OS === 'web'
+      ? window.confirm('Are you sure you want to delete this client?')
+      : true; // For mobile, you'd use Alert.alert
     
     if (confirmed) {
       deleteClientAction();
@@ -37,17 +49,34 @@ const ClientDetailsScreen: React.FC<{ navigation: any; route: any }> = ({ naviga
   const deleteClientAction = async () => {
     try {
       await deleteClient(clientId);
-      alert('Client deleted successfully');
+      if (Platform.OS === 'web') {
+        alert('Client deleted successfully');
+      }
       navigation.navigate('ClientsList');
     } catch (error: any) {
-      alert('Error: ' + (error.message || 'Failed to delete client'));
+      const message = error.message || 'Failed to delete client';
+      if (Platform.OS === 'web') {
+        alert('Error: ' + message);
+      }
     }
   };
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>❌ {error}</Text>
+        <TouchableOpacity style={styles.retryButton} onPress={loadClient}>
+          <Text style={styles.retryButtonText}>Retry</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   if (isLoading || !selectedClient) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#3b82f6" />
+        <Text style={styles.loadingText}>Loading client details...</Text>
       </View>
     );
   }
@@ -150,6 +179,37 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#0f172a'
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 14,
+    color: '#94a3b8',
+    fontWeight: '500'
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#0f172a',
+    padding: 40
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#ef4444',
+    fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: 20
+  },
+  retryButton: {
+    backgroundColor: '#3b82f6',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 12
+  },
+  retryButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '700'
   },
   header: {
     backgroundColor: '#1e293b',

@@ -11,7 +11,7 @@ import {
   ActivityIndicator,
   Alert
 } from 'react-native';
-import { useAuthStore } from '../../store/authStore';
+import { authService } from '../../services/authService';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type RootStackParamList = {
@@ -20,40 +20,61 @@ type RootStackParamList = {
   Dashboard: undefined;
 };
 
-type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
+type SignupScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Signup'>;
 
 interface Props {
-  navigation: LoginScreenNavigationProp;
+  navigation: SignupScreenNavigationProp;
 }
 
-export default function LoginScreen({ navigation }: Props) {
+export default function SignupScreen({ navigation }: Props) {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const login = useAuthStore((state) => state.login);
 
-  const handleLogin = async () => {
-    if (!email.trim() || !password.trim()) {
+  const handleSignup = async () => {
+    if (!name.trim() || !email.trim() || !password.trim()) {
       if (Platform.OS === 'web') {
-        alert('Please enter email and password');
+        alert('Please fill in all fields');
       } else {
-        Alert.alert('Error', 'Please enter email and password');
+        Alert.alert('Error', 'Please fill in all fields');
+      }
+      return;
+    }
+
+    if (password.length < 6) {
+      if (Platform.OS === 'web') {
+        alert('Password must be at least 6 characters');
+      } else {
+        Alert.alert('Error', 'Password must be at least 6 characters');
       }
       return;
     }
 
     setLoading(true);
     try {
-      console.log('🔐 Attempting login for:', email);
-      await login(email, password);
-      console.log('✅ Login successful, state updated');
-      // Navigation will happen automatically when isAuthenticated changes
+      const response = await authService.signup({ name, email, password });
+      
+      if (response.success) {
+        if (Platform.OS === 'web') {
+          alert('Account created successfully! Credentials have been sent to your email.');
+        } else {
+          Alert.alert(
+            'Success',
+            'Account created successfully! Credentials have been sent to your email.',
+            [{ text: 'OK', onPress: () => navigation.replace('Dashboard') }]
+          );
+        }
+        
+        if (Platform.OS === 'web') {
+          navigation.replace('Dashboard');
+        }
+      }
     } catch (error: any) {
-      console.error('❌ Login error:', error);
       if (Platform.OS === 'web') {
-        alert(error.message || 'Login failed');
+        alert(error.message || 'Signup failed');
       } else {
-        Alert.alert('Error', error.message || 'Login failed');
+        Alert.alert('Error', error.message || 'Signup failed');
       }
     } finally {
       setLoading(false);
@@ -70,8 +91,21 @@ export default function LoginScreen({ navigation }: Props) {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.card}>
-          <Text style={styles.title}>Welcome Back</Text>
-          <Text style={styles.subtitle}>Login to your account</Text>
+          <Text style={styles.title}>Create Account</Text>
+          <Text style={styles.subtitle}>Sign up to get started</Text>
+
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>NAME</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your name"
+              placeholderTextColor="#64748b"
+              value={name}
+              onChangeText={setName}
+              autoCapitalize="words"
+              editable={!loading}
+            />
+          </View>
 
           <View style={styles.inputContainer}>
             <Text style={styles.label}>EMAIL</Text>
@@ -91,7 +125,7 @@ export default function LoginScreen({ navigation }: Props) {
             <Text style={styles.label}>PASSWORD</Text>
             <TextInput
               style={styles.input}
-              placeholder="Enter your password"
+              placeholder="Enter password (min 6 characters)"
               placeholderTextColor="#64748b"
               value={password}
               onChangeText={setPassword}
@@ -102,20 +136,20 @@ export default function LoginScreen({ navigation }: Props) {
 
           <TouchableOpacity
             style={[styles.button, loading && styles.buttonDisabled]}
-            onPress={handleLogin}
+            onPress={handleSignup}
             disabled={loading}
           >
             {loading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.buttonText}>LOGIN</Text>
+              <Text style={styles.buttonText}>SIGN UP</Text>
             )}
           </TouchableOpacity>
 
           <View style={styles.footer}>
-            <Text style={styles.footerText}>Don't have an account? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-              <Text style={styles.linkText}>Sign Up</Text>
+            <Text style={styles.footerText}>Already have an account? </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+              <Text style={styles.linkText}>Login</Text>
             </TouchableOpacity>
           </View>
         </View>

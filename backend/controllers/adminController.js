@@ -1,9 +1,7 @@
-const Client = require('../models/Client');
-const Admin = require('../models/Admin');
-const mongoose = require('mongoose');
+const { db } = require('../config/firebase');
 
 /**
- * Admin Controller
+ * Admin Controller (Firebase)
  * Database management and statistics
  */
 
@@ -14,41 +12,40 @@ const mongoose = require('mongoose');
  */
 const getDatabaseStats = async (req, res) => {
   try {
-    // Get collection stats
-    const clientCount = await Client.countDocuments();
-    const adminCount = await Admin.countDocuments();
+    // Get collection counts
+    const clientsSnapshot = await db.collection('clients').count().get();
+    const usersSnapshot = await db.collection('users').count().get();
+    
+    const clientCount = clientsSnapshot.data().count;
+    const userCount = usersSnapshot.data().count;
 
-    // Get database size info
-    const db = mongoose.connection.db;
-    const stats = await db.stats();
+    // Get all clients for status breakdown
+    const allClientsSnapshot = await db.collection('clients').get();
+    
+    let activeClients = 0;
+    let expiredClients = 0;
+    let expiringClients = 0;
+    let totalRevenue = 0;
 
-    // Get clients by status
-    const activeClients = await Client.countDocuments({ status: 'Active' });
-    const expiredClients = await Client.countDocuments({ status: 'Expired' });
-    const expiringClients = await Client.countDocuments({ status: 'Expiring Soon' });
-
-    // Calculate total revenue
-    const totalRevenue = await Client.aggregate([
-      {
-        $group: {
-          _id: null,
-          total: { $sum: '$amountPaid' }
-        }
-      }
-    ]);
+    allClientsSnapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.status === 'Active') activeClients++;
+      if (data.status === 'Expired') expiredClients++;
+      if (data.status === 'Expiring Soon') expiringClients++;
+      totalRevenue += data.amountPaid || 0;
+    });
 
     res.status(200).json({
       success: true,
       data: {
         database: {
-          name: db.databaseName,
-          sizeOnDisk: `${(stats.dataSize / (1024 * 1024)).toFixed(2)} MB`,
-          collections: stats.collections,
-          indexes: stats.indexes
+          name: 'Firebase Firestore',
+          type: 'Cloud NoSQL',
+          collections: 2
         },
         collections: {
           clients: clientCount,
-          admins: adminCount
+          users: userCount
         },
         clientStats: {
           active: activeClients,
@@ -57,7 +54,7 @@ const getDatabaseStats = async (req, res) => {
           total: clientCount
         },
         revenue: {
-          total: totalRevenue.length > 0 ? totalRevenue[0].total : 0
+          total: totalRevenue
         }
       }
     });
@@ -77,14 +74,26 @@ const getDatabaseStats = async (req, res) => {
  */
 const getAllData = async (req, res) => {
   try {
-    const clients = await Client.find({}).sort({ createdAt: -1 });
-    const admins = await Admin.find({}).select('-password');
+    const clientsSnapshot = await db.collection('clients').get();
+    const usersSnapshot = await db.collection('users').get();
+
+    const clients = [];
+    clientsSnapshot.forEach(doc => {
+      clients.push({ id: doc.id, ...doc.data() });
+    });
+
+    const users = [];
+    usersSnapshot.forEach(doc => {
+      const data = doc.data();
+      delete data.password; // Don't export passwords
+      users.push({ id: doc.id, ...data });
+    });
 
     res.status(200).json({
       success: true,
       data: {
         clients,
-        admins,
+        users,
         exportDate: new Date().toISOString()
       }
     });
@@ -104,12 +113,21 @@ const getAllData = async (req, res) => {
  */
 const clearExpiredClients = async (req, res) => {
   try {
-    const result = await Client.deleteMany({ status: 'Expired' });
+    const snapshot = await db.collection('clients')
+      .where('status', '==', 'Expired')
+      .get();
+
+    const batch = db.batch();
+    snapshot.forEach(doc => {
+      batch.delete(doc.ref);
+    });
+
+    await batch.commit();
 
     res.status(200).json({
       success: true,
-      message: `Deleted ${result.deletedCount} expired clients`,
-      deletedCount: result.deletedCount
+      message: `Deleted ${snapshot.size} expired clients`,
+      deletedCount: snapshot.size
     });
   } catch (error) {
     console.error('Clear expired error:', error);

@@ -4,8 +4,14 @@ const mongoose = require('mongoose');
  * Client Model
  * Represents a subscriber in the stock broker CRM
  * Tracks subscription details, payment info, and status
+ * Each client belongs to a specific user
  */
 const clientSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: [true, 'User ID is required']
+  },
   name: {
     type: String,
     required: [true, 'Client name is required'],
@@ -60,6 +66,10 @@ const clientSchema = new mongoose.Schema({
   lastNotificationSent: {
     type: Date,
     default: null
+  },
+  lastReminderSent: {
+    type: Date,
+    default: null
   }
 });
 
@@ -77,7 +87,7 @@ clientSchema.set('toJSON', { virtuals: true });
 clientSchema.set('toObject', { virtuals: true });
 
 // Index for faster queries
-clientSchema.index({ status: 1, endDate: 1 });
-clientSchema.index({ name: 'text' });
+clientSchema.index({ userId: 1, status: 1, endDate: 1 });
+clientSchema.index({ userId: 1, name: 'text' });
 
 module.exports = mongoose.model('Client', clientSchema);

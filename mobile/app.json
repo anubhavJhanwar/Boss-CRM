@@ -1,19 +1,19 @@
 {
   "expo": {
-    "name": "Subscription CRM",
-    "slug": "subscription-crm",
-    "version": "1.0.0",
+    "name": "Boss Tracker",
+    "slug": "boss-tracker",
+    "version": "2.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0f172a"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.subscriptioncrm.app"
+      "bundleIdentifier": "com.bosstracker.app"
     },
     "android": {
-      "package": "com.subscriptioncrm.app",
+      "package": "com.bosstracker.app",
       "permissions": []
     },
     "web": {

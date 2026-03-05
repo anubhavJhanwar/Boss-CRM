@@ -156,20 +156,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#10b981',
     shadowColor: '#10b981'
   },
-  actionButtonOutline: {
-    backgroundColor: 'transparent',
-    borderWidth: 2,
-    borderColor: '#334155',
-    shadowOpacity: 0
-  },
   actionButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '700',
     letterSpacing: 0.3
-  },
-  actionButtonOutlineText: {
-    color: '#94a3b8'
   }
 });
 

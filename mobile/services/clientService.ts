@@ -29,9 +29,14 @@ export const clientService = {
    */
   getClientById: async (id: string): Promise<Client> => {
     try {
+      console.log('Fetching client by ID:', id);
+      console.log('API URL:', API_ENDPOINTS.CLIENT_BY_ID(id));
       const response = await api.get<ApiResponse<Client>>(API_ENDPOINTS.CLIENT_BY_ID(id));
+      console.log('Client response:', response.data);
       return response.data.data!;
     } catch (error: any) {
+      console.error('Error fetching client:', error);
+      console.error('Error response:', error.response);
       throw error.response?.data || { success: false, message: 'Failed to fetch client' };
     }
   },

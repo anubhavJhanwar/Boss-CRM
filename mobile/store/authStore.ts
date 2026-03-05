@@ -1,24 +1,30 @@
 import { create } from 'zustand';
-import { Admin } from '../types';
+import { storage } from '../services/storage';
 import { authService } from '../services/authService';
-import { getToken, getUserData } from '../services/storage';
 
 /**
  * Auth Store
  * Global state management for authentication using Zustand
  */
 
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: string;
+}
+
 interface AuthState {
-  user: Admin | null;
+  user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
   
   // Actions
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
+  setUser: (user: User) => void;
   clearError: () => void;
 }
 
@@ -31,41 +37,15 @@ export const useAuthStore = create<AuthState>((set) => ({
   login: async (email: string, password: string) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await authService.login(email, password);
+      const response = await authService.login({ email, password });
       set({
-        user: {
-          id: response.data.id,
-          email: response.data.email,
-          name: response.data.name
-        },
+        user: response.user,
         isAuthenticated: true,
         isLoading: false
       });
     } catch (error: any) {
       set({
         error: error.message || 'Login failed',
-        isLoading: false
-      });
-      throw error;
-    }
-  },
-
-  register: async (email: string, password: string, name: string) => {
-    set({ isLoading: true, error: null });
-    try {
-      const response = await authService.register(email, password, name);
-      set({
-        user: {
-          id: response.data.id,
-          email: response.data.email,
-          name: response.data.name
-        },
-        isAuthenticated: true,
-        isLoading: false
-      });
-    } catch (error: any) {
-      set({
-        error: error.message || 'Registration failed',
         isLoading: false
       });
       throw error;
@@ -84,12 +64,13 @@ export const useAuthStore = create<AuthState>((set) => ({
   checkAuth: async () => {
     set({ isLoading: true });
     try {
-      const token = await getToken();
-      const userData = await getUserData();
+      const token = await storage.getToken();
+      const userStr = await storage.getUser();
 
-      if (token && userData) {
+      if (token && userStr) {
+        const user = JSON.parse(userStr);
         set({
-          user: userData,
+          user,
           isAuthenticated: true,
           isLoading: false
         });
@@ -107,6 +88,10 @@ export const useAuthStore = create<AuthState>((set) => ({
         isLoading: false
       });
     }
+  },
+
+  setUser: (user: User) => {
+    set({ user, isAuthenticated: true });
   },
 
   clearError: () => set({ error: null })

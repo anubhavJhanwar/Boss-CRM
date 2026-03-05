@@ -1,308 +1,372 @@
-# Subscription CRM - Stock Broker Client Management
+# Boss Tracker - Subscription Management CRM
 
-A complete production-ready mobile app for managing stock broker subscription clients with automated expiry tracking and email notifications.
+A complete full-stack mobile application for managing stock broker client subscriptions with automated email reminders and expiry tracking.
 
-## 🎯 Features
+## 🚀 Features
 
-### Admin Features
-- Single admin authentication with JWT
-- Secure login with persistent sessions
-- Dashboard with key statistics
-- Client management (CRUD operations)
-
-### Client Management
-- Add/Edit/Delete clients
-- Track subscription details
-- Payment mode tracking (Cash/Online)
-- Automatic expiry calculation
-- Status tracking (Active/Expiring Soon/Expired)
-- Search and filter clients
-- Notes for each client
-
-### Automation
-- Daily cron job for expiry checks
-- Automatic status updates
-- Email notifications for expired subscriptions
-- Days remaining calculation
-
-### Dashboard Statistics
-- Total active clients
-- Total expired clients
-- Revenue this month
-- Clients expiring in next 7 days
+- **Authentication**: Firebase Authentication with email/password
+- **Client Management**: Add, edit, view, and delete clients
+- **Subscription Tracking**: Automatic status calculation (Active, Expiring Soon, Expired)
+- **Dashboard**: Real-time statistics and insights
+- **Automated Emails**: 
+  - Reminder emails 3 days before expiry
+  - Expiry notification emails
+  - Signup confirmation emails
+- **Expiring Soon**: Dedicated section for clients expiring in next 7 days
+- **Modern UI**: Professional dark theme with responsive design
+- **Cross-platform**: Works on Web, iOS, and Android
 
 ## 🛠️ Tech Stack
 
-### Backend
-- Node.js + Express.js
-- MongoDB Atlas (Cloud Database)
-- Mongoose ODM
-- JWT Authentication
-- bcrypt for password hashing
-- node-cron for scheduled tasks
-- Nodemailer for email notifications
-
-### Mobile App
-- Expo (React Native)
+### Frontend (Mobile)
+- Expo React Native
 - TypeScript
 - React Navigation
 - Zustand (State Management)
-- Axios (API Communication)
-- Expo SecureStore (Token Persistence)
-- NativeWind (Tailwind CSS)
+- Firebase Auth SDK
+- Axios
 
-## 📁 Project Structure
+### Backend
+- Node.js + Express
+- Firebase Firestore
+- Firebase Admin SDK
+- Nodemailer (Gmail SMTP)
+- node-cron (Scheduled Jobs)
+- bcryptjs (Password Hashing)
 
-```
-subscription-crm/
-├── backend/
-│   ├── config/
-│   │   └── database.js
-│   ├── controllers/
-│   │   ├── authController.js
-│   │   └── clientController.js
-│   ├── models/
-│   │   ├── Admin.js
-│   │   └── Client.js
-│   ├── routes/
-│   │   ├── authRoutes.js
-│   │   └── clientRoutes.js
-│   ├── middleware/
-│   │   ├── auth.js
-│   │   └── errorHandler.js
-│   ├── services/
-│   │   └── emailService.js
-│   ├── cron/
-│   │   └── updateExpiredClients.js
-│   ├── utils/
-│   │   ├── dateCalculations.js
-│   │   └── generateToken.js
-│   ├── .env.example
-│   ├── package.json
-│   └── server.js
-│
-└── mobile/
-    ├── components/
-    │   ├── ClientCard.tsx
-    │   └── StatCard.tsx
-    ├── constants/
-    │   └── config.ts
-    ├── screens/
-    │   ├── auth/
-    │   │   └── LoginScreen.tsx
-    │   ├── dashboard/
-    │   │   └── DashboardScreen.tsx
-    │   ├── clients/
-    │   │   ├── ClientsListScreen.tsx
-    │   │   ├── AddClientScreen.tsx
-    │   │   ├── EditClientScreen.tsx
-    │   │   └── ClientDetailsScreen.tsx
-    │   └── settings/
-    │       └── SettingsScreen.tsx
-    ├── services/
-    │   ├── api.ts
-    │   ├── authService.ts
-    │   ├── clientService.ts
-    │   └── storage.ts
-    ├── store/
-    │   ├── authStore.ts
-    │   └── clientStore.ts
-    ├── types/
-    │   └── index.ts
-    ├── App.tsx
-    ├── app.json
-    ├── package.json
-    └── tsconfig.json
+## 📋 Prerequisites
+
+- Node.js (v16 or higher)
+- npm or yarn
+- Expo CLI (`npm install -g expo-cli`)
+- Firebase account (free tier works)
+- Gmail account with App Password enabled
+
+## 🔧 Installation
+
+### 1. Clone the Repository
+
+```bash
+git clone <repository-url>
+cd boss-tracker
 ```
 
-## 🚀 Quick Start
+### 2. Setup Firebase
 
-### Prerequisites
-- Node.js 18+ installed
-- MongoDB Atlas account
-- Expo CLI installed
-- Android Studio (for local testing)
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Create a new project
+3. Enable Email/Password authentication
+4. Create Firestore database (production mode)
+5. Get web app config (Project Settings > General > Your apps > Web)
+6. Download service account key (Project Settings > Service Accounts > Generate New Private Key)
 
-### Backend Setup
+### 3. Backend Setup
 
-1. Navigate to backend folder:
 ```bash
 cd backend
-```
 
-2. Install dependencies:
-```bash
+# Install dependencies
 npm install
-```
 
-3. Create `.env` file:
-```bash
+# Copy environment template
 cp .env.example .env
-```
 
-4. Configure environment variables in `.env`:
-```env
-MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET=your_secret_key
-EMAIL_USER=your_email@gmail.com
-EMAIL_PASSWORD=your_app_password
-ADMIN_EMAIL=admin@example.com
-```
+# Edit .env and fill in your credentials
+# - Firebase configuration
+# - Gmail SMTP credentials
+# - Admin email
 
-5. Start server:
-```bash
+# Place firebase-service-account.json in backend folder
+# (Downloaded from Firebase Console)
+
+# Start the server
 npm start
 ```
 
-Backend runs on `http://localhost:5000`
+The backend will run on http://localhost:5000
 
-### Mobile App Setup
+### 4. Mobile App Setup
 
-1. Navigate to mobile folder:
 ```bash
 cd mobile
-```
 
-2. Install dependencies:
-```bash
+# Install dependencies
 npm install
+
+# Copy environment template
+cp .env.example .env
+
+# Edit .env and fill in your Firebase web config
+
+# Start Expo
+npm start
 ```
 
-3. Update API URL in `constants/config.ts`:
-```typescript
-export const API_BASE_URL = 'http://your-backend-url/api';
-```
+Then press:
+- `w` for web browser
+- `a` for Android emulator
+- `i` for iOS simulator
 
-4. Start Expo:
-```bash
-npx expo start
-```
+## 🔐 Environment Variables
 
-5. Scan QR code with Expo Go app or press 'a' for Android emulator
+### Backend (.env)
 
-## 📱 App Screens
-
-1. **Login Screen** - Admin authentication
-2. **Dashboard** - Statistics and quick actions
-3. **Clients List** - View all clients with filters
-4. **Add Client** - Create new client subscription
-5. **Edit Client** - Update client details
-6. **Client Details** - View complete client information
-7. **Settings** - Account info and logout
-
-## 🔐 Security Features
-
-- JWT-based authentication
-- Password hashing with bcrypt
-- Secure token storage with Expo SecureStore
-- Protected API routes
-- Single admin system (no public access)
-
-## 📧 Email Notifications
-
-Automated email notifications are sent when:
-- Client subscription expires
-- Email includes client name, amount, and expiry date
-- Sent to admin email configured in environment variables
-
-## ⏰ Cron Jobs
-
-Daily cron job runs at midnight to:
-- Check all client subscriptions
-- Update expired statuses
-- Send email notifications
-- Calculate days remaining
-
-## 🎨 UI/UX Features
-
-- Clean, professional design
-- Status color coding:
-  - Green: Active
-  - Yellow: Expiring Soon (≤5 days)
-  - Red: Expired
-- Smooth navigation transitions
-- Pull-to-refresh functionality
-- Loading states
-- Error handling with alerts
-
-## 📊 Business Logic
-
-### Subscription Calculation
-```
-startDate = Current date (or manual override)
-endDate = startDate + subscriptionMonths
-daysRemaining = endDate - today
-status = 
-  if daysRemaining <= 0: "Expired"
-  if daysRemaining <= 5: "Expiring Soon"
-  else: "Active"
-```
-
-## 🌐 API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - Register admin (first-time only)
-- `POST /api/auth/login` - Login admin
-- `GET /api/auth/me` - Get current admin
-
-### Clients
-- `GET /api/clients` - Get all clients (with filters)
-- `GET /api/clients/:id` - Get single client
-- `POST /api/clients` - Create client
-- `PUT /api/clients/:id` - Update client
-- `DELETE /api/clients/:id` - Delete client
-- `GET /api/clients/stats/dashboard` - Get dashboard stats
-
-## 🚢 Deployment
-
-See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for detailed deployment instructions.
-
-### Quick Deployment Steps
-1. Deploy MongoDB Atlas (Free tier)
-2. Deploy backend on Render (Free tier)
-3. Build mobile app with EAS
-4. Configure environment variables
-5. Create first admin user
-
-## 🔧 Configuration
-
-### Backend Environment Variables
 ```env
+# Server
 PORT=5000
-NODE_ENV=production
-MONGODB_URI=mongodb+srv://...
-JWT_SECRET=your_secret
-JWT_EXPIRE=30d
-ADMIN_EMAIL=admin@example.com
+NODE_ENV=development
+
+# Firebase
+FIREBASE_PROJECT_ID=your-project-id
+FIREBASE_API_KEY=your-api-key
+FIREBASE_AUTH_DOMAIN=your-project-id.firebaseapp.com
+FIREBASE_STORAGE_BUCKET=your-project-id.appspot.com
+FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+FIREBASE_APP_ID=your-app-id
+
+# Email
+ADMIN_EMAIL=your-email@example.com
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
-EMAIL_USER=your_email
-EMAIL_PASSWORD=your_app_password
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASSWORD=your-gmail-app-password
+
+# CORS
 CORS_ORIGIN=*
 ```
 
-### Mobile App Configuration
-Update `mobile/constants/config.ts` with your backend URL.
+### Mobile (.env)
 
-## 📝 License
+```env
+EXPO_PUBLIC_FIREBASE_API_KEY=your-api-key
+EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project-id.firebaseapp.com
+EXPO_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
+EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project-id.appspot.com
+EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+EXPO_PUBLIC_FIREBASE_APP_ID=your-app-id
+EXPO_PUBLIC_API_BASE_URL=http://localhost:5000/api
+```
 
-This project is private and proprietary.
+## 📡 API Endpoints
 
-## 🤝 Support
+### Authentication
+- `POST /api/auth/signup` - Register new user
+- `POST /api/auth/login` - Login user
+- `GET /api/auth/me` - Get current user (protected)
+- `DELETE /api/auth/delete-account` - Delete account (protected)
 
-For issues or questions, please check:
-1. Backend logs in Render dashboard
-2. MongoDB Atlas connection
-3. Environment variables configuration
-4. API endpoint responses
+### Clients
+- `GET /api/clients` - Get all clients (protected)
+- `GET /api/clients/:id` - Get single client (protected)
+- `POST /api/clients` - Create client (protected)
+- `PUT /api/clients/:id` - Update client (protected)
+- `DELETE /api/clients/:id` - Delete client (protected)
+- `GET /api/clients/stats/dashboard` - Get dashboard stats (protected)
+- `GET /api/clients/expiring-soon` - Get clients expiring in 7 days (protected)
 
-## 🎯 Future Enhancements
+## 🗄️ Firestore Data Structure
 
-- Multi-admin support
-- SMS notifications
-- Payment reminders before expiry
-- Revenue analytics
-- Export client data
-- Dark mode
-- Push notifications
-- Client portal
+### users Collection
+```
+users/{userId}
+  - uid: string
+  - name: string
+  - email: string
+  - password: string (hashed)
+  - createdAt: timestamp
+```
+
+### clients Collection
+```
+clients/{clientId}
+  - userId: string
+  - name: string
+  - phoneNumber: string
+  - paymentMode: "Cash" | "Online"
+  - amountPaid: number
+  - subscriptionMonths: number
+  - startDate: timestamp
+  - endDate: timestamp
+  - status: "Active" | "Expiring Soon" | "Expired"
+  - notes: string
+  - createdAt: timestamp
+  - lastNotificationSent: timestamp
+  - lastReminderSent: timestamp
+```
+
+## 🔄 Automated Cron Jobs
+
+### Daily Expiry Check (Midnight)
+- Updates client statuses based on end dates
+- Sends expiry notification emails to user's email
+- Prevents duplicate notifications
+
+### Daily Reminder Check (9:00 AM)
+- Finds clients expiring in 3 days
+- Sends reminder emails to user's email
+- Prevents duplicate reminders
+
+## 🎨 Design System
+
+### Colors
+- Background: `#0f172a` (Dark Slate)
+- Cards: `#1e293b` (Slate)
+- Primary: `#3b82f6` (Blue)
+- Success: `#10b981` (Green)
+- Warning: `#f59e0b` (Orange)
+- Danger: `#ef4444` (Red)
+
+## 🧪 Testing
+
+### Test Reminder Email
+```bash
+curl http://localhost:5000/test-reminder
+```
+
+### Test Health Check
+```bash
+curl http://localhost:5000/health
+```
+
+## 🚀 Deployment
+
+### Backend Deployment
+1. Set environment variables on your hosting platform
+2. Upload `firebase-service-account.json` securely (or use environment variable)
+3. Deploy backend
+4. Update mobile app API URL
+
+### Mobile Deployment
+1. Update `EXPO_PUBLIC_API_BASE_URL` in `.env`
+2. Build with EAS Build: `eas build`
+3. Submit to App Store / Play Store
+4. Or deploy as web app
+
+## 📊 Firebase Free Tier Limits
+
+- Authentication: Unlimited users
+- Firestore: 1 GB storage, 50K reads/day, 20K writes/day
+- Perfect for single-user CRM with hundreds of clients
+
+## 🔒 Security Best Practices
+
+1. **Never commit sensitive files**:
+   - `.env` files
+   - `firebase-service-account.json`
+   - Any files with passwords or API keys
+
+2. **Use environment variables** for all sensitive data
+
+3. **Enable 2FA** on Gmail and use App Passwords
+
+4. **Set Firestore security rules** to protect data
+
+5. **Regularly rotate** API keys and passwords
+
+6. **Use HTTPS** in production
+
+## 🐛 Troubleshooting
+
+### Backend won't start
+- Check Firebase service account file exists
+- Verify .env configuration
+- Check port 5000 is available
+
+### Mobile app blank screen
+- Verify Firebase config in .env
+- Check API_BASE_URL is correct
+- Clear Expo cache: `expo start -c`
+
+### Emails not sending
+- Enable 2FA on Gmail
+- Generate App Password
+- Verify EMAIL_USER and EMAIL_PASSWORD in .env
+
+### Authentication errors
+- Check Firebase Authentication is enabled
+- Verify Firestore security rules
+- Check token expiration
+
+## 📝 Project Structure
+
+```
+boss-tracker/
+├── backend/
+│   ├── config/
+│   │   ├── firebase.js
+│   │   └── email.js
+│   ├── controllers/
+│   │   ├── authController.js
+│   │   ├── clientController.js
+│   │   └── adminController.js
+│   ├── cron/
+│   │   ├── updateExpiredClients.js
+│   │   └── sendExpiryReminders.js
+│   ├── middleware/
+│   │   ├── authMiddleware.js
+│   │   └── errorHandler.js
+│   ├── routes/
+│   │   ├── authRoutes.js
+│   │   ├── clientRoutes.js
+│   │   └── adminRoutes.js
+│   ├── services/
+│   │   ├── emailService.js
+│   │   ├── reminderService.js
+│   │   └── sendSignupMail.js
+│   ├── utils/
+│   │   └── dateCalculations.js
+│   ├── .env.example
+│   ├── .gitignore
+│   ├── package.json
+│   └── server.js
+│
+├── mobile/
+│   ├── components/
+│   │   ├── ClientCard.tsx
+│   │   └── StatCard.tsx
+│   ├── config/
+│   │   └── firebase.ts
+│   ├── constants/
+│   │   └── config.ts
+│   ├── screens/
+│   │   ├── auth/
+│   │   ├── clients/
+│   │   ├── dashboard/
+│   │   └── settings/
+│   ├── services/
+│   │   ├── api.ts
+│   │   ├── authService.ts
+│   │   ├── clientService.ts
+│   │   └── storage.ts
+│   ├── store/
+│   │   ├── authStore.ts
+│   │   └── clientStore.ts
+│   ├── types/
+│   │   └── index.ts
+│   ├── .env.example
+│   ├── App.tsx
+│   ├── app.json
+│   └── package.json
+│
+├── .gitignore
+└── README.md
+```
+
+## 🤝 Contributing
+
+This is a private project. Not accepting contributions.
+
+## 📄 License
+
+Private - All Rights Reserved
+
+## 👨‍💻 Author
+
+Built for stock broker client subscription management.
+
+## 🙏 Acknowledgments
+
+- Firebase for reliable backend infrastructure
+- Expo for cross-platform mobile development
+- React Navigation for seamless navigation
+- Nodemailer for email functionality

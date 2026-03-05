@@ -1,10 +1,11 @@
 /**
  * App Configuration
  * Centralized configuration for API endpoints and app settings
+ * Uses environment variables for security
  */
 
-// API Base URL - Update this with your deployed backend URL
-export const API_BASE_URL = 'http://localhost:5000/api';  // Works for both web and mobile in dev
+// API Base URL - from environment variable
+export const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:5000/api';
 
 // API Endpoints
 export const API_ENDPOINTS = {

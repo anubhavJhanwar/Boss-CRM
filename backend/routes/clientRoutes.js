@@ -5,9 +5,10 @@ const {
   createClient,
   updateClient,
   deleteClient,
-  getDashboardStats
+  getDashboardStats,
+  getExpiringSoon
 } = require('../controllers/clientController');
-const { protect } = require('../middleware/auth');
+const { protect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -21,6 +22,9 @@ router.use(protect);
 
 // Dashboard stats
 router.get('/stats/dashboard', getDashboardStats);
+
+// Expiring soon clients
+router.get('/expiring-soon', getExpiringSoon);
 
 // CRUD operations
 router.route('/')

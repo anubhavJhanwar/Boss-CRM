@@ -7,11 +7,13 @@ import { useAuthStore } from './store/authStore';
 
 // Screens
 import LoginScreen from './screens/auth/LoginScreen';
+import SignupScreen from './screens/auth/SignupScreen';
 import DashboardScreen from './screens/dashboard/DashboardScreen';
 import ClientsListScreen from './screens/clients/ClientsListScreen';
 import AddClientScreen from './screens/clients/AddClientScreen';
 import EditClientScreen from './screens/clients/EditClientScreen';
 import ClientDetailsScreen from './screens/clients/ClientDetailsScreen';
+import ExpiringSoonScreen from './screens/clients/ExpiringSoonScreen';
 import SettingsScreen from './screens/settings/SettingsScreen';
 
 const Stack = createNativeStackNavigator();
@@ -36,6 +38,7 @@ function DrawerMenu({ visible, onClose, navigation }: any) {
   const menuItems = [
     { name: 'Dashboard', screen: 'Dashboard', icon: '📊' },
     { name: 'Clients', screen: 'ClientsList', icon: '👥' },
+    { name: 'Expiring Soon', screen: 'ExpiringSoon', icon: '⚠️' },
     { name: 'Add Client', screen: 'AddClient', icon: '➕' },
     { name: 'Settings', screen: 'Settings', icon: '⚙️' },
   ];
@@ -131,11 +134,18 @@ export default function App() {
           }}
         >
           {!isAuthenticated ? (
-            <Stack.Screen
-              name="Login"
-              component={LoginScreen}
-              options={{ headerShown: false }}
-            />
+            <>
+              <Stack.Screen
+                name="Login"
+                component={LoginScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Signup"
+                component={SignupScreen}
+                options={{ headerShown: false }}
+              />
+            </>
           ) : (
             <>
               <Stack.Screen
@@ -147,6 +157,11 @@ export default function App() {
                 name="ClientsList"
                 component={ClientsListScreen}
                 options={{ title: 'Clients' }}
+              />
+              <Stack.Screen
+                name="ExpiringSoon"
+                component={ExpiringSoonScreen}
+                options={{ title: 'Expiring Soon' }}
               />
               <Stack.Screen
                 name="AddClient"

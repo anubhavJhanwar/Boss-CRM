@@ -94,11 +94,11 @@ const ClientsListScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       ) : (
         <FlatList
           data={clients}
-          keyExtractor={(item) => item._id}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <ClientCard
               client={item}
-              onPress={() => navigation.navigate('ClientDetails', { clientId: item._id })}
+              onPress={() => navigation.navigate('ClientDetails', { clientId: item.id })}
             />
           )}
           contentContainerStyle={styles.listContainer}
