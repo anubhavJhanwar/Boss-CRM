@@ -57,7 +57,7 @@ const DashboardScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
       <View style={styles.header}>
-        <Text style={styles.greeting}>Welcome, {user?.name}!</Text>
+        <Text style={styles.greeting}>Boss Tracker</Text>
         <Text style={styles.date}>{new Date().toLocaleDateString()}</Text>
       </View>
 

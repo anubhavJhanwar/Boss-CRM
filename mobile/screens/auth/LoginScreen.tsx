@@ -70,7 +70,7 @@ export default function LoginScreen({ navigation }: Props) {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.card}>
-          <Text style={styles.title}>Welcome Back</Text>
+          <Text style={styles.title}>Boss Tracker</Text>
           <Text style={styles.subtitle}>Login to your account</Text>
 
           <View style={styles.inputContainer}>
